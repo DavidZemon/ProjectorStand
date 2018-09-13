@@ -1,0 +1,8 @@
+bin/
+out/
+build/
+cmake-build-*/
+.idea/
+.settings/
+.cproject
+.project
