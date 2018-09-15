@@ -40,4 +40,15 @@ Dream Features
 Architecture
 ------------
 
-TODO
+* Cog 1 - Main
+  Wait on button push to begin movement. Upon button push:
+  1. Check limit switch to ensure movement is allowed
+  2. Read from potentiometer to determine speed
+  3. Enable hardware PWM for motor control
+  4. While limit switch not reached
+     1. Pause briefly (10 ms?)
+  5. Stop PWM signal 
+* Cog 2 - Current sensor interrupt
+  Watch digital input for high-current. If high-current detected:
+  * Stop all other cogs
+  * Blink error message on LED(s)
