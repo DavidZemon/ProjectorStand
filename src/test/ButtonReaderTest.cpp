@@ -13,10 +13,10 @@ using PropWare::Queue;
 static const Pin::Mask UP_BUTTON_MASK   = Pin::P0;
 static const Pin::Mask DOWN_BUTTON_MASK = Pin::P1;
 
-static uint16_t        raiseBuffer[8];
-static uint16_t        dropBuffer[8];
-static Queue<uint16_t> raiseCalls(raiseBuffer);
-static Queue<uint16_t> dropCalls(dropBuffer);
+static uint8_t        raiseBuffer[8];
+static uint8_t        dropBuffer[8];
+static Queue<uint8_t> raiseCalls(raiseBuffer);
+static Queue<uint8_t> dropCalls(dropBuffer);
 
 class MockAdcWrapper: public AdcWrapper {
     public:
@@ -32,30 +32,48 @@ class MockAdcWrapper: public AdcWrapper {
 class MockMotorDriver: public MotorDriver {
     public:
         MockMotorDriver ()
-                : MotorDriver(Pin::NULL_PIN, Pin::NULL_PIN, Pin::NULL_PIN) {
+                : MotorDriver(Pin::NULL_PIN, Pin::NULL_PIN, Pin::NULL_PIN, 0) {
         }
 
-        void raise (const uint16_t speed) const {
+        void raise (const uint8_t speed) const {
             raiseCalls.enqueue(speed);
         }
 
-        void drop (const uint16_t speed) const {
+        void drop (const uint8_t speed) const {
             dropCalls.enqueue(speed);
         }
+};
+
+class ButtonReaderWrapper: public Runnable {
+    public:
+        template<size_t N>
+        ButtonReaderWrapper (const uint32_t (&stack)[N], volatile bool &ready, MockAdcWrapper &adc,
+                             MockMotorDriver &motorDriver)
+                :Runnable(stack),
+                 m_ready(&ready),
+                 testable(UP_BUTTON_MASK,
+                          DOWN_BUTTON_MASK,
+                          adc,
+                          motorDriver) {
+        }
+
+        void run () {
+            *this->m_ready = true;
+            this->testable.run();
+        }
+
+    public:
+        volatile bool      *m_ready;
+        const ButtonReader testable;
 };
 
 class ButtonReaderTest {
     public:
         ButtonReaderTest ()
                 : motorDriver(),
-                  testable(testableStack,
-                           UP_BUTTON_MASK,
-                           DOWN_BUTTON_MASK,
-                           this->adc,
-                           this->motorDriver,
-                           testableReady),
                   testableReady(false),
-                  testableCogId(Runnable::invoke(testable)) {
+                  testableWrapper(testableStack, testableReady, this->adc, this->motorDriver),
+                  testableCogId(Runnable::invoke(this->testableWrapper)) {
             raiseCalls.clear();
             dropCalls.clear();
         }
@@ -65,12 +83,12 @@ class ButtonReaderTest {
         }
 
     public:
-        uint32_t           testableStack[64];
-        MockAdcWrapper     adc;
-        MockMotorDriver    motorDriver;
-        const ButtonReader testable;
-        volatile bool      testableReady;
-        const int          testableCogId;
+        uint32_t            testableStack[64];
+        MockAdcWrapper      adc;
+        MockMotorDriver     motorDriver;
+        volatile bool       testableReady;
+        ButtonReaderWrapper testableWrapper;
+        const int           testableCogId;
 };
 
 TEST_F(ButtonReaderTest, upButtonPushed_motorMovesUp) {

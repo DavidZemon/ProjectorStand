@@ -1,3 +1,9 @@
+/**
+ * @file    CurrentWatchDogTest.cpp
+ *
+ * @author  David Zemon
+ */
+
 #include <PropWare/PropWareTests.h>
 #undef cogstop
 

@@ -18,7 +18,8 @@ static const Pin::Mask DOWN_BUTTON_MASK = Pin::P6;
 
 static const Pin::Mask MOTOR_DUTY_CYCLE_PIN_MASK = Pin::P7;
 static const Pin::Mask MOTOR_DIRECTION_PIN_MASK  = Pin::P8;
-static const Pin::Mask MOTOR_ENABLE_PIN_MASK     = Pin::P9;
+static const Pin::Mask MOTOR_ENABLE_PIN_MASK     = Pin::P9; // Connect to both EN and !D2
+static const uint32_t  MOTOR_PWM_FREQUENCY       = 20000; // Measured in Hz
 
 
 int main () {
@@ -34,10 +35,12 @@ int main () {
     SPI::get_instance().set_mosi(MOSI_MASK);
     SPI::get_instance().set_miso(MISO_MASK);
     SPI::get_instance().set_sclk(SCLK_MASK);
-    AdcWrapper adcWrapper(&adc, ADC_CHANNEL)
+    AdcWrapper adcWrapper(&adc, ADC_CHANNEL);
 
-    const MotorDriver motorDriver(MOTOR_DUTY_CYCLE_PIN_MASK, MOTOR_DIRECTION_PIN_MASK, MOTOR_ENABLE_PIN_MASK);
+    const MotorDriver motorDriver(MOTOR_DUTY_CYCLE_PIN_MASK, MOTOR_DIRECTION_PIN_MASK, MOTOR_ENABLE_PIN_MASK,
+                                  MOTOR_PWM_FREQUENCY);
 
     const ButtonReader buttonReader(UP_BUTTON_MASK, DOWN_BUTTON_MASK, adcWrapper, motorDriver);
-    return buttonReader.run();
+    buttonReader.run();
+    return 0;
 }
