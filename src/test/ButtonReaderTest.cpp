@@ -32,7 +32,7 @@ class MockAdcWrapper: public AdcWrapper {
 class MockMotorDriver: public MotorDriver {
     public:
         MockMotorDriver ()
-                : MotorDriver(Pin::NULL_PIN, Pin::NULL_PIN, Pin::NULL_PIN, 0) {
+                : MotorDriver(Pin::NULL_PIN, Pin::NULL_PIN, Pin::NULL_PIN, 0, Pin::NULL_PIN, Pin::NULL_PIN) {
         }
 
         void raise (const uint8_t speed) const {

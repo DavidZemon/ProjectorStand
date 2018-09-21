@@ -19,13 +19,14 @@ void cogstop (const int cogId) {
     stoppedCogs.push_back(cogId);
 }
 
-static const PropWare::Port::Mask PIN_MASK = Pin::P0;
+static const PropWare::Port::Mask CURRENT_LIMIT_PIN_MASK = Pin::P0;
+static const PropWare::Port::Mask LED_PIN_MASK           = Pin::P1;
 class CurrentWatchDogTest {
     public:
         CurrentWatchDogTest ()
                 : watchDogReady(false),
-                  testable(this->m_stack, PIN_MASK, watchDogReady),
-                  pin(PIN_MASK, Pin::Dir::OUT) {
+                  testable(this->m_stack, CURRENT_LIMIT_PIN_MASK, LED_PIN_MASK, watchDogReady),
+                  pin(CURRENT_LIMIT_PIN_MASK, Pin::Dir::OUT) {
             stoppedCogs.clear();
             pin.clear();
         }
