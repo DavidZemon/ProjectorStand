@@ -14,6 +14,9 @@ using PropWare::DualPWM;
 
 class MotorDriver {
     public:
+        static const unsigned int MAX_DUTY = 100;
+
+    public:
         MotorDriver (const Pin::Mask motorPwmPinMask, const Pin::Mask motorDirectionPinMask,
                      const Pin::Mask motorEnablePinMask, const uint32_t frequency, const Pin::Mask raiseLimitSwitchMask,
                      const Pin::Mask dropLimitSwitchMask)
@@ -57,7 +60,7 @@ class MotorDriver {
 
     private:
         void do_pwm (const uint8_t duty) const {
-            const auto phase = this->m_period * duty / 100;
+            const auto phase = this->m_period * duty / MAX_DUTY;
 
             this->m_motorEnable.set();
             auto timer = CNT + this->m_period;

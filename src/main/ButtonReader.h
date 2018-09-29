@@ -20,6 +20,7 @@ using PropWare::Runnable;
 class ButtonReader {
     public:
         static const uint32_t BUTTON_WAIT_PERIOD_US = 400;
+        static const uint32_t MAX_ADC_VALUE         = 4096;
 
     public:
         ButtonReader (const Pin::Mask upButtonMask,
@@ -44,9 +45,9 @@ class ButtonReader {
                 } while (!this->m_upButton.read() && !this->m_downButton.read());
 
                 if (this->m_upButton.read()) {
-                    this->m_motorDriver->raise(adcValue);
+                    this->m_motorDriver->raise(adcValue * MotorDriver::MAX_DUTY / MAX_ADC_VALUE);
                 } else {
-                    this->m_motorDriver->drop(adcValue);
+                    this->m_motorDriver->drop(adcValue * MotorDriver::MAX_DUTY / MAX_ADC_VALUE);
                 }
             }
         }

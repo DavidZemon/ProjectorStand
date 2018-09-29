@@ -13,6 +13,8 @@ using PropWare::Queue;
 static const Pin::Mask UP_BUTTON_MASK   = Pin::P0;
 static const Pin::Mask DOWN_BUTTON_MASK = Pin::P1;
 
+static volatile uint16_t g_adcReturnValue;
+
 static uint8_t        raiseBuffer[8];
 static uint8_t        dropBuffer[8];
 static Queue<uint8_t> raiseCalls(raiseBuffer);
@@ -25,7 +27,7 @@ class MockAdcWrapper: public AdcWrapper {
         }
 
         virtual uint16_t read () {
-            return 42;
+            return g_adcReturnValue;
         }
 };
 
@@ -94,6 +96,7 @@ class ButtonReaderTest {
 TEST_F(ButtonReaderTest, upButtonPushed_motorMovesUp) {
     const Pin button(UP_BUTTON_MASK, Pin::Dir::OUT);
     button.clear();
+    g_adcReturnValue = 2048;
 
     while (!testableReady)
         waitcnt(CNT + MILLISECOND);
@@ -110,12 +113,14 @@ TEST_F(ButtonReaderTest, upButtonPushed_motorMovesUp) {
 
     ASSERT_EQ_MSG(1, raiseCalls.size());
     ASSERT_EQ_MSG(0, dropCalls.size());
-    ASSERT_EQ_MSG(42, raiseCalls.dequeue());
+    const auto actual = raiseCalls.dequeue();
+    ASSERT_EQ_MSG(50, actual); // ADC value should be scaled to fit motor driver expectations
 }
 
 TEST_F(ButtonReaderTest, downButtonPushed_motorMovesDown) {
     const Pin button(DOWN_BUTTON_MASK, Pin::Dir::OUT);
     button.clear();
+    g_adcReturnValue = 1024;
 
     while (!testableReady)
         waitcnt(CNT + MILLISECOND);
@@ -132,7 +137,8 @@ TEST_F(ButtonReaderTest, downButtonPushed_motorMovesDown) {
 
     ASSERT_EQ_MSG(0, raiseCalls.size());
     ASSERT_EQ_MSG(1, dropCalls.size());
-    ASSERT_EQ_MSG(42, dropCalls.dequeue());
+    const auto actual = dropCalls.dequeue();
+    ASSERT_EQ_MSG(25, actual); // ADC value should be scaled to fit motor driver expectations
 }
 
 int main () {
