@@ -31,7 +31,7 @@ class CurrentWatchDog: public Runnable {
             this->m_currentSensePin.set_dir_in();
             *this->m_readySignal = true;
 
-            this->m_currentSensePin.wait_until_high();
+            this->m_currentSensePin.wait_until_low();
 
             const int currentId = cogid();
             for (int  i         = 0; i < 8; ++i)

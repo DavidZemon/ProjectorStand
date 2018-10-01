@@ -28,7 +28,7 @@ class CurrentWatchDogTest {
                   testable(this->m_stack, CURRENT_LIMIT_PIN_MASK, LED_PIN_MASK, watchDogReady),
                   pin(CURRENT_LIMIT_PIN_MASK, Pin::Dir::OUT) {
             stoppedCogs.clear();
-            pin.clear();
+            pin.set();
         }
 
     public:
@@ -46,7 +46,7 @@ TEST_F(CurrentWatchDogTest, WillStopWhenPinGoesHigh) {
     waitcnt(CNT + 10 * MILLISECOND);
     ASSERT_EQ_MSG(0, stoppedCogs.size());
 
-    pin.set();
+    pin.clear();
     waitcnt(CNT + 2 * MILLISECOND);
 
     ASSERT_EQ_MSG(7, stoppedCogs.size());
