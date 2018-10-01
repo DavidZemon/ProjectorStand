@@ -41,30 +41,29 @@ class MotorDriver {
         }
 
         virtual void raise (const uint8_t duty) const {
-            if (this->m_raiseLimitSwitch.read())
-                return;
-            else {
+            if (this->m_raiseLimitSwitch.read()) {
                 this->m_motorDirection.clear();
                 this->do_pwm(duty);
-            }
+            } else
+                return;
         }
 
         virtual void drop (const uint8_t duty) const {
-            if (this->m_dropLimitSwitch.read())
-                return;
-            else {
+            if (this->m_dropLimitSwitch.read()) {
                 this->m_motorDirection.set();
                 this->do_pwm(duty);
-            }
+            } else
+                return;
         }
 
     private:
+
         void do_pwm (const uint8_t duty) const {
             const auto phase = this->m_period * duty / MAX_DUTY;
 
             this->m_motorEnable.set();
             auto timer = CNT + this->m_period;
-            while (!this->m_raiseLimitSwitch.read()) {
+            while (this->m_raiseLimitSwitch.read()) {
                 __asm__ volatile("neg PHSA, %0" : : "r" (phase));
                 timer = waitcnt2(timer, this->m_period);
             }

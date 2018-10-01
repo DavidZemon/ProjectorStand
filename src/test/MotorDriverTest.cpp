@@ -61,8 +61,8 @@ class MotorDriverTest {
                   enablePin(MotorDriverRunnable::ENABLE_MASK, Pin::Dir::IN),
                   raiseLimitSwitch(MotorDriverRunnable::RAISE_LIMIT_SWITCH_MASK, Pin::Dir::OUT),
                   dropLimitSwitch(MotorDriverRunnable::DROP_LIMIT_SWITCH_MASK, Pin::Dir::OUT) {
-            this->raiseLimitSwitch.clear();
-            this->dropLimitSwitch.clear();
+            this->raiseLimitSwitch.set();
+            this->dropLimitSwitch.set();
 
             while (!this->ready)
                 waitcnt(CNT + MILLISECOND);
@@ -95,7 +95,7 @@ TEST_F(MotorDriverTest, raise_limitSwitchAlreadySet_noAction) {
     // The motor really shouldn't be turning yet...
     ASSERT_FALSE(this->enablePin.read());
 
-    this->raiseLimitSwitch.set();
+    this->raiseLimitSwitch.clear();
     this->raiseDuty = 10;
     waitcnt(CNT + MILLISECOND);
     ASSERT_FALSE(this->enablePin.read());
@@ -108,7 +108,7 @@ TEST_F(MotorDriverTest, drop_limitSwitchAlreadySet_noAction) {
     // The motor really shouldn't be turning yet...
     ASSERT_FALSE(this->enablePin.read());
 
-    this->dropLimitSwitch.set();
+    this->dropLimitSwitch.clear();
     this->dropDuty = 10;
     waitcnt(CNT + MILLISECOND);
     ASSERT_FALSE(this->enablePin.read());
@@ -157,7 +157,7 @@ TEST_F(MotorDriverTest, raise) {
     ASSERT_FALSE(this->directionPin.read());
 
     // Limit switch is hit, motor should stop
-    this->raiseLimitSwitch.set();
+    this->raiseLimitSwitch.clear();
     waitcnt(CNT + MILLISECOND);
     ASSERT_FALSE(this->enablePin.read());
 }
@@ -205,7 +205,7 @@ TEST_F(MotorDriverTest, lower) {
     ASSERT_TRUE(this->directionPin.read());
 
     // Limit switch is hit, motor should stop
-    this->raiseLimitSwitch.set();
+    this->raiseLimitSwitch.clear();
     waitcnt(CNT + MILLISECOND);
     ASSERT_FALSE(this->enablePin.read());
 }

@@ -4,6 +4,7 @@ find_package(PropWare REQUIRED)
 project(ProjectorStand)
 
 set(MODEL lmm)
+set(BOARD QUICKSTART)
 
 create_executable(ProjectorStand src/main/main.cpp)
 
