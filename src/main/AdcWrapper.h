@@ -6,13 +6,11 @@
 
 #pragma once
 
-#include <PropWare/sensor/analog/mcp3xxx.h>
-
-using PropWare::MCP3xxx;
+#include "singlepinmcp3208.h"
 
 class AdcWrapper {
     public:
-        AdcWrapper (MCP3xxx *adc, const MCP3xxx::Channel channel)
+        AdcWrapper (SinglePinMCP3208 *adc, const MCP3xxx::Channel channel)
                 : m_adc(adc),
                   m_channel(channel) {
         }
@@ -22,6 +20,6 @@ class AdcWrapper {
         }
 
     private:
-        MCP3xxx                *m_adc;
-        const MCP3xxx::Channel m_channel;
+        SinglePinMCP3208                *m_adc;
+        const SinglePinMCP3208::Channel m_channel;
 };

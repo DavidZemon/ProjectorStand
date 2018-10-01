@@ -9,12 +9,11 @@
 #include <PropWare/concurrent/runnable.h>
 #include <PropWare/gpio/pin.h>
 #include <PropWare/gpio/simpleport.h>
-#include <PropWare/sensor/analog/mcp3xxx.h>
+#include "singlepinmcp3208.h"
 #include "AdcWrapper.h"
 #include "MotorDriver.h"
 
 using PropWare::Pin;
-using PropWare::MCP3xxx;
 using PropWare::Runnable;
 
 class ButtonReader {

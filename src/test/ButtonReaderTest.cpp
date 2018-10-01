@@ -23,7 +23,7 @@ static Queue<uint8_t> dropCalls(dropBuffer);
 class MockAdcWrapper: public AdcWrapper {
     public:
         MockAdcWrapper ()
-                : AdcWrapper(NULL, MCP3xxx::Channel::CHANNEL_0) {
+                : AdcWrapper(NULL, SinglePinMCP3208::Channel::CHANNEL_0) {
         }
 
         virtual uint16_t read () {
